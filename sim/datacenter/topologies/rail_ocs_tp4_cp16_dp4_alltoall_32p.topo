@@ -1,0 +1,31 @@
+Type RailOCS
+
+# RailOCS topology for CP-domain all-to-all (TP=4, CP=16, DP=4):
+# - nodes=256 => Servers=32, GpusPerServer=8
+# - ServersPerTor=32 => 8 ToRs (0..7), each with 32 downlinks
+# - Planes=32 => 32 OCS uplinks; total ToR ports = 32(down)+32(up)=64 (NB at ToR)
+
+Servers 32
+GpusPerServer 8
+ServersPerTor 32
+
+Planes 32
+
+LinkSpeedGbps 400
+
+# OCS modeling tweaks (fast + no-drop OCS fabric)
+OcsQueuePkts 1
+OcsNoDrop 1
+OcsLinkLatencyNs 50
+OcsSwitchLatencyNs 0
+
+# Non-OCS links (host<->ToR)
+LinkLatencyNs 800
+SwitchLatencyNs 800
+
+SlotUs 5
+ReconfigUs 0
+
+ScheduleFile /data/csg-htsim/sim/datacenter/topologies/rail_ocs_tp4_cp16_dp4_alltoall_32p.schedule
+
+

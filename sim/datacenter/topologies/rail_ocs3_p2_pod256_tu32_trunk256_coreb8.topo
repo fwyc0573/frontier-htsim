@@ -1,0 +1,41 @@
+Type RailOCS3
+
+# Example topo for Rail-OCS3 (3-layer, 2-OCS, B1) with 2 pods.
+# - podsize=256 (GPUs/hosts per pod)
+# - gpus_per_server=8 => servers_per_pod=32
+# - ToRs per pod (rail model) = gpus_per_server = 8 (no split)
+# - tor_up=32 => ToR has 32 uplinks into Agg-OCS
+# - trunk_ports_per_pod=256 => total trunks = tors*tor_up
+#
+Pods 2
+Podsize 256
+GpusPerServer 8
+ServersPerTor 32
+
+TorUp 32
+TrunkPortsPerPod 256
+
+# Schedule planes:
+AggOcsPlanes 32
+CoreOcsPlanes 8
+
+# Schedules (compiled from DSL):
+AggOcsScheduleFile /data/csg-htsim/sim/datacenter/topologies/agg_ocs_tor_trunk_pod256_tu32_trunk256.from_dsl.schedule
+CoreOcsScheduleFile /data/csg-htsim/sim/datacenter/topologies/core_ocs_ring_p2_trunk256_b8.from_dsl.schedule
+
+LinkSpeedGbps 400
+
+# OCS modeling tweaks (fast + no-drop fabric)
+OcsQueuePkts 1
+OcsNoDrop 1
+OcsLinkLatencyNs 50
+OcsSwitchLatencyNs 0
+
+# Non-OCS links (host<->ToR)
+LinkLatencyNs 800
+SwitchLatencyNs 800
+
+SlotUs 5
+ReconfigUs 0
+
+

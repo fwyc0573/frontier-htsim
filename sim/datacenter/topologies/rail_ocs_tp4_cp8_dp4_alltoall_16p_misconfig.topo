@@ -1,0 +1,34 @@
+Type RailOCS
+
+# RailOCS topo - MISCONFIGURED schedule variant (same physical budget, different wiring).
+#
+# - Servers=16, GpusPerServer=8 => 128 hosts
+# - ServersPerTor=16 => 8 ToRs (0..7), each with 16 downlinks
+# - Planes=16 => 16 OCS ports per ToR; total ports per ToR = 16(down)+16(OCS)=32 <= 64
+#
+# The schedule intentionally provides the required CP-domain circuits on only 1 plane,
+# and wastes the other planes on irrelevant ToR pairs.
+
+Servers 16
+GpusPerServer 8
+ServersPerTor 16
+
+Planes 16
+
+LinkSpeedGbps 400
+
+# OCS modeling tweaks (match your current Rail-OCS fast/no-drop setup)
+OcsQueuePkts 1
+OcsNoDrop 1
+OcsLinkLatencyNs 50
+OcsSwitchLatencyNs 0
+
+LinkLatencyNs 800
+SwitchLatencyNs 800
+
+SlotUs 5
+ReconfigUs 0
+
+ScheduleFile /data/csg-htsim/sim/datacenter/topologies/rail_ocs_tp4_cp8_dp4_alltoall_16p_misconfig.schedule
+
+

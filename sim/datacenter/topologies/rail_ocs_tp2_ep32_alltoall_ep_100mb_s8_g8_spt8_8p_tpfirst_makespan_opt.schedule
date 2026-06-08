@@ -1,0 +1,42 @@
+# RailOCS static schedule (slot 0 only) for 8 planes.
+#
+# Workload-specialized schedule for:
+#   TP=2, EP=32, EP-domain all-to-all, nodes=64 (8 servers * 8 GPUs/server), exclude_intra_server=true
+#   placement_order=[TP, EP, DP, CP] (TP-first)
+#   servers_per_tor=8 (rail_splits=1) => tors=8 (ToR ids 0..7)
+#   planes=8
+#
+# Key property under TP-first packing:
+# - EP groups fix TP, and TP alternates with node_id => ToR parity == TP.
+# - Therefore, this workload has NO demand on even<->odd ToR pairs.
+#
+# Goal (makespan-opt for THIS workload):
+# - Allocate all planes to only the demanded pairs (even-even and odd-odd), allowing even-odd to be unreachable.
+# - Since demand among demanded ToR pairs is uniform, maximize the minimum per-pair circuit multiplicity
+#   by distributing 8 planes across the 3 perfect matchings of K4 as 3/3/2.
+#
+# Even ToRs: {0,2,4,6}  matchings:
+#   M0: 0-2, 4-6
+#   M1: 0-4, 2-6
+#   M2: 0-6, 2-4
+# Odd ToRs:  {1,3,5,7}  matchings:
+#   N0: 1-3, 5-7
+#   N1: 1-5, 3-7
+#   N2: 1-7, 3-5
+#
+# Planes repeat (M0,N0) x3, (M1,N1) x3, (M2,N2) x2.
+#
+
+slot 0
+
+plane 0 0-2 4-6 1-3 5-7
+plane 1 0-2 4-6 1-3 5-7
+plane 2 0-2 4-6 1-3 5-7
+
+plane 3 0-4 2-6 1-5 3-7
+plane 4 0-4 2-6 1-5 3-7
+plane 5 0-4 2-6 1-5 3-7
+
+plane 6 0-6 2-4 1-7 3-5
+plane 7 0-6 2-4 1-7 3-5
+

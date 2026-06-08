@@ -1,0 +1,21 @@
+Type RailOCS
+
+# RailOCS (static, slot 0 only) for TP=4 (tors=4), full connectivity across rails:
+# - Each rail (gpu_index) is one ToR, so tors = GpusPerServer = 4
+# - OCS planes: 3 (enough to realize full mesh K4 via 3 matchings)
+# - Connectivity does NOT reconfigure during the run in current implementation.
+
+Servers 32
+GpusPerServer 4
+Planes 3
+
+LinkSpeedGbps 400
+LinkLatencyNs 800
+SwitchLatencyNs 800
+
+SlotUs 100
+ReconfigUs 0
+
+ScheduleFile /data/csg-htsim/sim/datacenter/topologies/rail_ocs_tp4_fullmesh_3p_400g.schedule
+
+

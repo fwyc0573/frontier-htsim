@@ -1,0 +1,33 @@
+# RailOCS static schedule (slot 0 only).
+#
+# We have 8 ToRs (0..7). Each "plane" is a perfect matching (each ToR appears at most once).
+# IMPORTANT: RailOcsTopology only supports *direct* ToR->ToR connectivity (no multi-hop via intermediate ToRs).
+#
+# This schedule is optimized for CP-domain all-to-all with:
+#   TP=4, CP=8, DP=4 and placement_order=[TP,CP,DP]
+# Under this placement, each CP group spans exactly two ToRs:
+#   TP=0 -> (0,4), TP=1 -> (1,5), TP=2 -> (2,6), TP=3 -> (3,7)
+# Therefore only these four ToR pairs need OCS connectivity to avoid "no path" failures.
+# We repeat the same matching on all planes to increase capacity between the required pairs.
+
+slot 0
+
+# Same matching on all planes (capacity scaling)
+plane 0 0-4 1-5 2-6 3-7
+plane 1 0-4 1-5 2-6 3-7
+plane 2 0-4 1-5 2-6 3-7
+plane 3 0-4 1-5 2-6 3-7
+plane 4 0-4 1-5 2-6 3-7
+plane 5 0-4 1-5 2-6 3-7
+plane 6 0-4 1-5 2-6 3-7
+plane 7 0-4 1-5 2-6 3-7
+plane 8 0-4 1-5 2-6 3-7
+plane 9 0-4 1-5 2-6 3-7
+plane 10 0-4 1-5 2-6 3-7
+plane 11 0-4 1-5 2-6 3-7
+plane 12 0-4 1-5 2-6 3-7
+plane 13 0-4 1-5 2-6 3-7
+plane 14 0-4 1-5 2-6 3-7
+plane 15 0-4 1-5 2-6 3-7
+
+

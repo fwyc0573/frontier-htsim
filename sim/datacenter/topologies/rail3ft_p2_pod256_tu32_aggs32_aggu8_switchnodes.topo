@@ -1,0 +1,15 @@
+Type Rail3FT
+Pods 2
+Podsize 256
+GpusPerServer 8
+ServersPerTor 32
+TorUp 32
+AggCount 32
+AggUp 8
+UseSwitchNodes 1
+
+# Optional overrides (runner typically sets these via CLI)
+LinkLatencyNs 800
+SwitchLatencyNs 800
+
+

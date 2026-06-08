@@ -1,0 +1,40 @@
+# RailOCS static schedule (slot 0 only) for 8 planes.
+#
+# EXTREME (workload-specialized) schedule for TP-first placement_order=[TP, EP, DP, CP].
+# Intended for: TP=2, EP=32, EP-domain all-to-all, exclude_intra_server=true,
+# servers=8, gpus_per_server=8, servers_per_tor=8 => tors=8 (ToR ids 0..7), planes=8.
+#
+# Under TP-first packing, only even-even and odd-odd ToR pairs carry demand.
+# This schedule is intentionally skewed: it assigns MOST planes to ONE selected ToR pair
+# (and its companion pair due to matching constraints), while keeping other demanded pairs
+# reachable (appear at least once).
+#
+# Even ToRs: {0,2,4,6} matchings:
+#   M0: 0-2, 4-6
+#   M1: 0-4, 2-6   <-- contains target pair 0-4
+#   M2: 0-6, 2-4
+# Odd ToRs:  {1,3,5,7} matchings:
+#   N0: 1-3, 5-7
+#   N1: 1-5, 3-7   <-- contains target pair 1-5
+#   N2: 1-7, 3-5
+#
+# Planes:
+# - 6 planes repeat (M1 + N1): heavily favor 0-4 and 1-5.
+# - 1 plane uses (M0 + N0) to keep other pairs reachable.
+# - 1 plane uses (M2 + N2) to keep other pairs reachable.
+#
+
+slot 0
+
+# Heavy planes (repeat M1+N1)
+plane 0 0-4 2-6 1-5 3-7
+plane 1 0-4 2-6 1-5 3-7
+plane 2 0-4 2-6 1-5 3-7
+plane 3 0-4 2-6 1-5 3-7
+plane 4 0-4 2-6 1-5 3-7
+plane 5 0-4 2-6 1-5 3-7
+
+# Coverage planes (ensure all demanded even-even / odd-odd pairs appear at least once)
+plane 6 0-2 4-6 1-3 5-7
+plane 7 0-6 2-4 1-7 3-5
+

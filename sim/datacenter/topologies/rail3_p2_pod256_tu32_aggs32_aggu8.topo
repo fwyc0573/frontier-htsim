@@ -1,0 +1,13 @@
+Type Rail3
+Pods 2
+Podsize 256
+GpusPerServer 8
+ServersPerTor 32
+TorUp 32
+AggCount 32
+AggUp 8
+LinkSpeedGbps 400
+LinkLatencyNs 800
+SwitchLatencyNs 800
+
+

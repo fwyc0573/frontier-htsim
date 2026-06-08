@@ -1,0 +1,33 @@
+Type RailOCS
+
+# RailOCS topology:
+# - Each GPU is modeled as a host node.
+# - node_id = server_id * GpusPerServer + gpu_index
+# - gpu_index = node_id % GpusPerServer
+# - Same gpu_index across servers attaches to the same ToR (a "rail").
+#
+# OCS:
+# - ToR<->ToR connectivity is provided by one or more OCS planes.
+# - Which ToR ports are connected is driven by a separate schedule file.
+
+Servers 2
+GpusPerServer 8
+
+# Number of parallel OCS planes (you can think of this as "how many independent OCS fabrics").
+Planes 4
+
+# Link rates (Gbps). If you keep them the same, set LinkSpeedGbps only.
+LinkSpeedGbps 100
+
+# Latencies
+LinkLatencyNs 1000
+SwitchLatencyNs 0
+
+# OCS timing
+SlotUs 5
+ReconfigUs 1
+
+# Schedule file path (slot-by-slot connectivity)
+ScheduleFile /data/csg-htsim/sim/datacenter/topologies/rail_ocs_example.schedule
+
+

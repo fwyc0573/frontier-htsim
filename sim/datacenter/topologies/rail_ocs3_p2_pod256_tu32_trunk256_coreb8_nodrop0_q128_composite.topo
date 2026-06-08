@@ -1,0 +1,44 @@
+Type RailOCS3
+
+# Variant topo for Rail-OCS3 (3-layer, 2-OCS, B1) with 2 pods.
+# This variant changes ONLY OCS queue behavior:
+# - OcsNoDrop 0 => use finite queue model (can overflow)
+# - OcsQueuePkts 128 => OCS queue capacity in packets (converted by memFromPkt)
+# - OcsQueueType composite => use CompositeQueue on OCS links (trim/ECN behaviors), closer to fattree composite
+#
+# Baseline file:
+#   /data/csg-htsim/sim/datacenter/topologies/rail_ocs3_p2_pod256_tu32_trunk256_coreb8.topo
+
+Pods 2
+Podsize 256
+GpusPerServer 8
+ServersPerTor 32
+
+TorUp 32
+TrunkPortsPerPod 256
+
+# Schedule planes:
+AggOcsPlanes 32
+CoreOcsPlanes 8
+
+# Schedules (compiled from DSL):
+AggOcsScheduleFile /data/csg-htsim/sim/datacenter/topologies/agg_ocs_tor_trunk_pod256_tu32_trunk256.from_dsl.schedule
+CoreOcsScheduleFile /data/csg-htsim/sim/datacenter/topologies/core_ocs_ring_p2_trunk256_b8.from_dsl.schedule
+
+LinkSpeedGbps 400
+
+# OCS modeling tweaks
+OcsQueuePkts 256
+OcsNoDrop 0
+OcsQueueType composite
+OcsLinkLatencyNs 50
+OcsSwitchLatencyNs 0
+
+# Non-OCS links (host<->ToR)
+LinkLatencyNs 800
+SwitchLatencyNs 800
+
+SlotUs 5
+ReconfigUs 0
+
+

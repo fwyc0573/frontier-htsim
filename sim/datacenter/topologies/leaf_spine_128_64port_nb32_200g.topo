@@ -1,0 +1,27 @@
+Nodes 128
+Tiers 2
+Podsize 128
+
+# Non-blocking leaf-spine under 64-port limit (128 GPU endpoints), Method A:
+# - ToR (leaf) ports: 32 down to hosts + 32 up to spines = 64 (max for 64-port switch)
+# - Spines: 32 spines, each with 4 downlinks to the 4 ToRs (no uplinks)
+#
+# Total ToRs = Nodes / Radix_Down(Tier0) = 128/32 = 4
+# Total uplinks = 4 ToRs * 32 uplinks = 128
+# Total spines = uplinks / Radix_Down(Tier1) = 128/4 = 32
+
+Tier 0
+Downlink_speed_Gbps 200
+Radix_Down 32
+Radix_Up 32
+Downlink_Latency_ns 800
+Switch_Latency_ns 800
+Oversubscribed 1
+
+Tier 1
+Downlink_speed_Gbps 200
+Radix_Down 4
+Downlink_Latency_ns 800
+Switch_Latency_ns 800
+
+

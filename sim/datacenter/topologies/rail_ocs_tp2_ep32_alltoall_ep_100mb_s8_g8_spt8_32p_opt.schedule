@@ -1,0 +1,64 @@
+# RailOCS static schedule (slot 0 only) for 32 planes.
+#
+# Experiment:
+#   TP=2, EP=32, EP-domain all-to-all, nodes=64 (8 servers * 8 GPUs/server), exclude_intra_server=true
+#   rail_ocs.servers_per_tor=8 (rail-style: each rail aggregates all 8 servers)
+#   planes=32
+#
+# RailOCS "ToR id" derivation used by htsim_runner.py:
+#   rail_splits = ceil(servers / servers_per_tor) = ceil(8/8) = 1
+#   tors       = gpus_per_server * rail_splits      = 8 * 1    = 8
+# So ToR ids are 0..7.
+#
+# EP all-to-all is dense, so we use a round-robin 1-factorization over tors=8.
+# There are (tors-1)=7 distinct perfect matchings covering all ToR pairs once.
+# Planes use round (p mod 7), repeating as needed to fill 32 planes.
+#
+
+slot 0
+
+# Round 0
+plane 0 0-7 1-6 2-5 3-4
+# Round 1
+plane 1 0-6 7-5 1-4 2-3
+# Round 2
+plane 2 0-5 6-4 7-3 1-2
+# Round 3
+plane 3 0-4 5-3 6-2 7-1
+# Round 4
+plane 4 0-3 4-2 5-1 6-7
+# Round 5
+plane 5 0-2 3-1 4-7 5-6
+# Round 6
+plane 6 0-1 2-7 3-6 4-5
+
+# Repeat rounds for remaining planes (p mod 7)
+plane 7 0-7 1-6 2-5 3-4
+plane 8 0-6 7-5 1-4 2-3
+plane 9 0-5 6-4 7-3 1-2
+plane 10 0-4 5-3 6-2 7-1
+plane 11 0-3 4-2 5-1 6-7
+plane 12 0-2 3-1 4-7 5-6
+plane 13 0-1 2-7 3-6 4-5
+
+plane 14 0-7 1-6 2-5 3-4
+plane 15 0-6 7-5 1-4 2-3
+plane 16 0-5 6-4 7-3 1-2
+plane 17 0-4 5-3 6-2 7-1
+plane 18 0-3 4-2 5-1 6-7
+plane 19 0-2 3-1 4-7 5-6
+plane 20 0-1 2-7 3-6 4-5
+
+plane 21 0-7 1-6 2-5 3-4
+plane 22 0-6 7-5 1-4 2-3
+plane 23 0-5 6-4 7-3 1-2
+plane 24 0-4 5-3 6-2 7-1
+plane 25 0-3 4-2 5-1 6-7
+plane 26 0-2 3-1 4-7 5-6
+plane 27 0-1 2-7 3-6 4-5
+
+plane 28 0-7 1-6 2-5 3-4
+plane 29 0-6 7-5 1-4 2-3
+plane 30 0-5 6-4 7-3 1-2
+plane 31 0-4 5-3 6-2 7-1
+

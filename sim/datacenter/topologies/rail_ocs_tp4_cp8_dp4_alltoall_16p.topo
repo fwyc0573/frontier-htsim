@@ -1,0 +1,38 @@
+Type RailOCS
+
+# RailOCS topology for CP-domain all-to-all:
+# - Servers=16, GpusPerServer=8 => 128 hosts
+# - We keep ServersPerTor=16 so each rail has exactly 1 ToR (8 ToRs total: 0..7)
+# - Planes=16 provides each ToR with 16 OCS ports (one per plane), total ports per ToR:
+#     downlinks=16 (hosts) + ocs_uplinks=16 (planes) = 32 <= 64-port limit
+
+Servers 16
+GpusPerServer 8
+ServersPerTor 16
+
+Planes 16
+
+# Link rates (Gbps)
+LinkSpeedGbps 400
+
+# OCS circuit links: approximate "no buffering" by using a very small queue.
+# (Still models serialization at finite link rate.)
+OcsQueuePkts 1
+OcsNoDrop 1
+
+# Latencies
+LinkLatencyNs 800
+SwitchLatencyNs 800
+
+# OCS-specific latencies (make OCS "fast" vs packet switches)
+OcsLinkLatencyNs 50
+OcsSwitchLatencyNs 0
+
+# OCS timing (not used for static slot-0 connectivity, but required by parser)
+SlotUs 5
+ReconfigUs 0
+
+# Schedule file path (slot-by-slot connectivity; current implementation uses slot 0 only)
+ScheduleFile /data/csg-htsim/sim/datacenter/topologies/rail_ocs_tp4_cp8_dp4_alltoall_16p.schedule
+
+

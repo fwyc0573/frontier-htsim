@@ -1,0 +1,36 @@
+Type RailOCS3
+Pods 2
+Podsize 256
+GpusPerServer 8
+ServersPerTor 32
+
+TorUp 32
+TrunkPortsPerPod 256
+
+AggOcsPlanes 32
+CoreOcsPlanes 8
+
+AggOcsScheduleFile /data/csg-htsim/sim/datacenter/topologies/agg_ocs_tor_trunk_pod256_tu32_trunk256.from_dsl.schedule
+# Core schedule tuned for T2G: allow any ToR->ToR across pods by shifting trunk indices across planes.
+CoreOcsScheduleFile /data/csg-htsim/sim/datacenter/topologies/core_ocs_shift_p2_trunk256_b8.t2g.schedule
+
+# Match fattree3 experiments (200Gbps links).
+LinkSpeedGbps 200
+
+# OCS queueing model (match fattree composite behavior on OCS links).
+OcsQueuePkts 256
+OcsNoDrop 0
+OcsQueueType composite
+OcsCutThrough 1
+HostFeederBuffer 1
+
+OcsLinkLatencyNs 50
+OcsSwitchLatencyNs 0
+
+# Non-OCS links (host<->ToR) + ToR switch latency (match fattree3 latency params).
+LinkLatencyNs 800
+SwitchLatencyNs 800
+
+SlotUs 5
+ReconfigUs 0
+

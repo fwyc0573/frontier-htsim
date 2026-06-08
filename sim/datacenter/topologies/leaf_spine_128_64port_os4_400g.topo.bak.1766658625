@@ -1,0 +1,24 @@
+Nodes 128
+Tiers 2
+Podsize 128
+
+# 4:1 oversubscribed leaf-spine under 64-port limit (128 GPU endpoints):
+# - ToR (leaf) ports: 16 down to hosts + 4 up to spines = 20 (<= 64)
+# - Oversubscribed ratio at ToR: 16/4 = 4
+# - Total ToRs = 128/16 = 8
+# - Total uplinks = 8 ToRs * 4 uplinks = 32
+# - Choose spines: 4 spines, each with 8 downlinks (connect to all 8 ToRs)
+
+Tier 0
+Downlink_speed_Gbps 400
+Radix_Down 16
+Radix_Up 4
+Downlink_Latency_ns 1000
+Switch_Latency_ns 0
+Oversubscribed 4
+
+Tier 1
+Downlink_speed_Gbps 400
+Radix_Down 8
+Downlink_Latency_ns 1000
+Switch_Latency_ns 0

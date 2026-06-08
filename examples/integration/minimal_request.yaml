@@ -1,0 +1,47 @@
+cluster:
+  servers: 8
+  gpus_per_server: 8
+
+parallelism:
+  tp: 8
+  cp: 1
+  dp: 8
+  ep: 1
+
+topology:
+  kind: rail
+  spines: 8
+  servers_per_tor: 8
+  paths: 8
+
+collective:
+  kind: allreduce
+  tensor_bytes: 268435456
+  domain_dims: [DP]
+  placement_order: [TP, CP, DP, EP]
+  exclude_intra_server: false
+  use_triggers: true
+  allreduce_model: ring_steps
+
+network:
+  linkspeed_mbps: 400000
+  mtu: 9216
+  q: 256
+  cwnd: 64
+
+runner:
+  end_us: 20000000
+  seed: 1
+  build: false
+  progress: false
+  print_args: false
+  stop_on_finished: false
+  heartbeat_s: 5
+  out_dir: ""
+
+intra_server:
+  model: legacy_fabric
+  nvlink_one_way_bw_GBps: 450.0
+  nvlink_latency_us: 0.5
+  nvlink_efficiency: 0.8
+

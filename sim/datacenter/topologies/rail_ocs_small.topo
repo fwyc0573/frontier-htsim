@@ -1,0 +1,23 @@
+Type RailOCS
+
+# Small RailOCS example:
+# - 2 servers, 4 GPUs per server => 8 nodes total
+# - 4 ToRs (rails) indexed 0..3 (gpu_index)
+# - Planes=2 means each ToR has 2 parallel uplink "ports"/circuits (minimal-change abstraction)
+
+Servers 2
+GpusPerServer 4
+Planes 2
+
+LinkSpeedGbps 100
+LinkLatencyNs 1000
+SwitchLatencyNs 0
+
+# Static OCS: we only use slot 0 in the schedule, and keep it fixed.
+SlotUs 5
+ReconfigUs 0
+
+ScheduleFile /data/csg-htsim/sim/datacenter/topologies/rail_ocs_small.schedule
+
+
+

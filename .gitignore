@@ -1,0 +1,37 @@
+*.out
+*~
+*.bak
+*.bak2
+*#
+*.o
+.DS_store
+logout.dat
+/sim/datacenter/htsim_*
+/sim/datacenter/old_tests/htsim_*
+!/sim/datacenter/htsim_runner.py
+/sim/tests/htsim_*
+
+# Python
+**/__pycache__/
+*.py[cod]
+
+# Editor / OS
+.vscode/
+*.swp
+
+# Common build dirs
+build/
+cmake-build-*/
+benchmark/
+# Example outputs
+/sim/EXAMPLES/in_and_out/logfile*
+/sim/EXAMPLES/in_and_out/ts_in_out
+
+exp_results/
+experiments_legacy/
+rl_net_exp/
+plots/
+idmap.txt
+tests/
+nccl/
+nccl_analysis/

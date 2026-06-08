@@ -1,0 +1,18 @@
+Nodes 4
+Tiers 2
+Podsize 4
+
+Tier 0
+Downlink_speed_Gbps 200
+Radix_Down 2
+Radix_Up 2
+Downlink_Latency_ns 1000
+Switch_Latency_ns 0
+Oversubscribed 1
+
+Tier 1
+Downlink_speed_Gbps 200
+Radix_Down 2
+Downlink_Latency_ns 1000
+Switch_Latency_ns 0
+

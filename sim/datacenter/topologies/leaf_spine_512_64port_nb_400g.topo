@@ -1,0 +1,27 @@
+Nodes 512
+Tiers 2
+Podsize 512
+
+# Non-blocking leaf-spine under 64-port limit:
+# - ToR (leaf) ports: 32 down to hosts + 32 up to spines = 64
+# - Spines: 32 spines, each with 16 down to ToRs (no uplinks)
+#
+# Total ToRs = Nodes / Radix_Down(Tier0) = 512/32 = 16
+# Total uplinks = 16 ToRs * 32 uplinks = 512
+# Total spines = uplinks / Radix_Down(Tier1) = 512/16 = 32
+
+Tier 0
+Downlink_speed_Gbps 400
+Radix_Down 32
+Radix_Up 32
+Downlink_Latency_ns 1000
+Switch_Latency_ns 0
+Oversubscribed 1
+
+Tier 1
+Downlink_speed_Gbps 400
+Radix_Down 16
+Downlink_Latency_ns 1000
+Switch_Latency_ns 0
+
+

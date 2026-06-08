@@ -1,0 +1,33 @@
+Type RailOCS3
+Pods 2
+Podsize 256
+GpusPerServer 8
+ServersPerTor 32
+
+TorUp 32
+TrunkPortsPerPod 256
+
+AggOcsPlanes 32
+CoreOcsPlanes 8
+
+AggOcsScheduleFile /data/csg-htsim/sim/datacenter/topologies/agg_ocs_tor_trunk_pod256_tu32_trunk256.from_dsl.schedule
+# Core ring schedule: preserves same trunk index across pods (good match for pairwise_same_ep / same-rail traffic).
+CoreOcsScheduleFile /data/csg-htsim/sim/datacenter/topologies/core_ocs_ring_p2_trunk256_b8.from_dsl.schedule
+
+LinkSpeedGbps 200
+
+OcsQueuePkts 256
+OcsNoDrop 0
+OcsQueueType composite
+OcsCutThrough 1
+HostFeederBuffer 1
+
+OcsLinkLatencyNs 50
+OcsSwitchLatencyNs 0
+
+LinkLatencyNs 800
+SwitchLatencyNs 800
+
+SlotUs 5
+ReconfigUs 0
+

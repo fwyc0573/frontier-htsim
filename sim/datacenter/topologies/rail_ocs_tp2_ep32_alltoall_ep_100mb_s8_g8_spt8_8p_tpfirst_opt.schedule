@@ -1,0 +1,35 @@
+# RailOCS static schedule (slot 0 only) for 8 planes.
+#
+# This schedule is derived for:
+#   TP=2, EP=32, EP-domain all-to-all, nodes=64 (8 servers * 8 GPUs/server), exclude_intra_server=true
+#   placement_order=[TP, EP, DP, CP] (TP-first physical packing)
+#   rail_ocs.servers_per_tor=8 (rail_splits=1) => tors=8 (ToR ids 0..7)
+#   planes=8
+#
+# Method:
+# - Compute the ToR->ToR demand matrix induced by the above placement + EP all-to-all + exclude_intra_server.
+# - Use the 7-round 1-factorization (circle method) to ensure all ToR pairs are covered (connectivity).
+# - Use the 8th plane to repeat the highest-weight matching under the computed demand matrix.
+#
+# Result: plane 7 repeats Round 3 (0-4, 5-3, 6-2, 7-1).
+#
+
+slot 0
+
+# Round 0
+plane 0 0-7 1-6 2-5 3-4
+# Round 1
+plane 1 0-6 7-5 1-4 2-3
+# Round 2
+plane 2 0-5 6-4 7-3 1-2
+# Round 3 (highest-weight under TP-first demand)
+plane 3 0-4 5-3 6-2 7-1
+# Round 4
+plane 4 0-3 4-2 5-1 6-7
+# Round 5
+plane 5 0-2 3-1 4-7 5-6
+# Round 6
+plane 6 0-1 2-7 3-6 4-5
+# Extra plane: repeat Round 3
+plane 7 0-4 5-3 6-2 7-1
+

@@ -1,0 +1,44 @@
+# RailOCS static schedule (slot 0 only) for 32 planes.
+#
+# CP-domain all-to-all under placement_order=[TP,CP,DP] needs ToR pairs:
+#   (0-4), (1-5), (2-6), (3-7)
+#
+# We repeat the same perfect matching across all 32 planes to maximize
+# circuit capacity between the required pairs.
+
+slot 0
+
+plane 0 0-4 1-5 2-6 3-7
+plane 1 0-4 1-5 2-6 3-7
+plane 2 0-4 1-5 2-6 3-7
+plane 3 0-4 1-5 2-6 3-7
+plane 4 0-4 1-5 2-6 3-7
+plane 5 0-4 1-5 2-6 3-7
+plane 6 0-4 1-5 2-6 3-7
+plane 7 0-4 1-5 2-6 3-7
+plane 8 0-4 1-5 2-6 3-7
+plane 9 0-4 1-5 2-6 3-7
+plane 10 0-4 1-5 2-6 3-7
+plane 11 0-4 1-5 2-6 3-7
+plane 12 0-4 1-5 2-6 3-7
+plane 13 0-4 1-5 2-6 3-7
+plane 14 0-4 1-5 2-6 3-7
+plane 15 0-4 1-5 2-6 3-7
+plane 16 0-4 1-5 2-6 3-7
+plane 17 0-4 1-5 2-6 3-7
+plane 18 0-4 1-5 2-6 3-7
+plane 19 0-4 1-5 2-6 3-7
+plane 20 0-4 1-5 2-6 3-7
+plane 21 0-4 1-5 2-6 3-7
+plane 22 0-4 1-5 2-6 3-7
+plane 23 0-4 1-5 2-6 3-7
+plane 24 0-4 1-5 2-6 3-7
+plane 25 0-4 1-5 2-6 3-7
+plane 26 0-4 1-5 2-6 3-7
+plane 27 0-4 1-5 2-6 3-7
+plane 28 0-4 1-5 2-6 3-7
+plane 29 0-4 1-5 2-6 3-7
+plane 30 0-4 1-5 2-6 3-7
+plane 31 0-4 1-5 2-6 3-7
+
+

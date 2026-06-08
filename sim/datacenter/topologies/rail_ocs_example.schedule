@@ -1,0 +1,19 @@
+# Simple example schedule for RailOCS.
+# We have GpusPerServer=8 => 8 ToRs (rails) indexed 0..7.
+# Planes=4 => plane ids 0..3.
+#
+# Format:
+#   slot <slot_id>
+#     plane <p> <tor_a>-<tor_b> <tor_c>-<tor_d> ...
+#
+# Within each plane, ToRs should appear at most once (a matching).
+#
+# This example connects (0<->1, 2<->3, 4<->5, 6<->7) on all planes for slot 0.
+
+slot 0
+plane 0 0-1 2-3 4-5 6-7
+plane 1 0-1 2-3 4-5 6-7
+plane 2 0-1 2-3 4-5 6-7
+plane 3 0-1 2-3 4-5 6-7
+
+

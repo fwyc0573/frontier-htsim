@@ -1,0 +1,31 @@
+# RailOCS static schedule (slot 0 only) for 8 planes.
+#
+# Workload-specialized makespan-opt schedule for:
+#   TP=4, EP=16, EP-domain all-to-all, nodes=64 (8 servers * 8 GPUs/server), exclude_intra_server=true
+#   placement_order=[TP, EP, DP, CP] (TP-first)
+#   servers_per_tor=8 (rail_splits=1) => tors=8 (ToR ids 0..7)
+#   planes=8
+#
+# Key property under TP-first packing with TP=4:
+# - TP == node_id % 4, and ToR id == node_id % 8, so ToR id % 4 == TP.
+# - EP groups fix TP, therefore traffic only uses ToR pairs within the same mod-4 class:
+#     TP0 -> {0,4}, TP1 -> {1,5}, TP2 -> {2,6}, TP3 -> {3,7}
+# - Thus, the only demanded inter-ToR pairs are:
+#     0<->4, 1<->5, 2<->6, 3<->7
+#
+# Makespan-opt for this workload (with planes=8):
+# - Repeat the unique matching (0-4, 1-5, 2-6, 3-7) on ALL planes, maximizing parallel circuit
+#   multiplicity for exactly the demanded ToR pairs.
+#
+
+slot 0
+
+plane 0 0-4 1-5 2-6 3-7
+plane 1 0-4 1-5 2-6 3-7
+plane 2 0-4 1-5 2-6 3-7
+plane 3 0-4 1-5 2-6 3-7
+plane 4 0-4 1-5 2-6 3-7
+plane 5 0-4 1-5 2-6 3-7
+plane 6 0-4 1-5 2-6 3-7
+plane 7 0-4 1-5 2-6 3-7
+
