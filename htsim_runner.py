@@ -1466,7 +1466,12 @@ def _merge_spec_into_args(args: argparse.Namespace, spec: Dict[str, Any]) -> Non
     set_if_none_or_zero("cp", _spec_get(spec, "parallel.cp", _spec_get(spec, "cp", None)))
     set_if_none_or_zero("dp", _spec_get(spec, "parallel.dp", _spec_get(spec, "dp", None)))
     set_if_none_or_zero("ep", _spec_get(spec, "parallel.ep", _spec_get(spec, "ep", None)))
-    set_if_none_or_zero("tensor_bytes", _spec_get(spec, "collective.tensor_bytes", _spec_get(spec, "tensor_bytes", None)))
+    # An empty transfer is a real collective: it still pays the synchronization
+    # latency, so zero is a payload rather than a missing field. set_if_none_or_zero
+    # would read a spec zero as absent and would let a positive spec value
+    # overwrite an explicit command-line zero, so this field uses the helper that
+    # treats only None and "" as unset.
+    set_if_none_or_empty("tensor_bytes", _spec_get(spec, "collective.tensor_bytes", _spec_get(spec, "tensor_bytes", None)))
     set_if_none_or_zero("seed", _spec_get(spec, "seed", _spec_get(spec, "runner.seed", None)))
 
     set_if_none_or_empty("topology", _spec_get(spec, "topology.type", _spec_get(spec, "topology", "")))
@@ -2345,12 +2350,29 @@ def main(argv: list[str]) -> int:
     if getattr(args, "t2g_mode", None) is None:
         args.t2g_mode = "grouped"
 
+    # Required fields, with whether 0 is a legal value for each. For the rest a
+    # zero still means the field was never set, which is how spec merging and
+    # the argparse defaults represent an absent numeric field.
+    required_fields = (
+        ("collective_type", False),
+        ("domain_dims", False),
+        ("topology", False),
+        ("nodes", False),
+        ("gpus_per_server", False),
+        ("tp", False),
+        ("tensor_bytes", True),
+    )
     missing = []
-    for k in ("collective_type", "domain_dims", "topology", "nodes", "gpus_per_server", "tp", "tensor_bytes"):
-        if getattr(args, k) in (None, "", 0):
+    for k, zero_is_valid in required_fields:
+        value = getattr(args, k)
+        if value is None or value == "" or (not zero_is_valid and value == 0):
             missing.append(k)
     if missing:
         print(f"Error: missing required fields: {missing}. Provide via CLI or --spec.", file=sys.stderr)
+        return 2
+
+    if args.tensor_bytes < 0:
+        print("Error: tensor_bytes must be >= 0.", file=sys.stderr)
         return 2
 
     if args.servers is None or args.servers <= 0:

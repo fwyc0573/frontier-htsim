@@ -152,6 +152,8 @@ class Scenario:
             )
         if self.intra_server.model not in ("legacy_fabric", "ignore", "nvlink_analytic"):
             raise ValueError("intra_server.model must be one of legacy_fabric|ignore|nvlink_analytic")
+        if self.collective.tensor_bytes < 0:
+            raise ValueError("collective.tensor_bytes must be >= 0")
         if self.collective.intra_server_combine_rule is not None and self.collective.intra_server_combine_rule not in (
             "max",
             "sum",
