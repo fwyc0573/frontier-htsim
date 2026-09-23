@@ -157,3 +157,44 @@ def test_an_empty_transfer_keeps_its_synchronization_latency(payload, tmp_path):
     assert result["assumptions"]["estimated_bytes_per_rank"] == pytest.approx(bytes_per_rank)
     if payload == 0:
         assert result["predicted_time_ms"] > 0
+
+
+def two_server_scenario(payload, alltoall_model, out_dir):
+    """An EP=16 group on two 8-GPU servers, so every cross-server pair is a network flow."""
+
+    return Scenario.from_dict({
+        "cluster": {"servers": 2, "gpus_per_server": GPUS},
+        "parallelism": {"tp": 1, "cp": 1, "dp": 1, "ep": 2 * GPUS},
+        "collective": {
+            "kind": "alltoall",
+            "tensor_bytes": payload,
+            "domain_dims": ["EP"],
+            "placement_order": ["TP", "CP", "DP", "EP"],
+            "participant_ranks": list(range(2 * GPUS)),
+            "alltoall_model": alltoall_model,
+        },
+        "runner": {"out_dir": str(out_dir)},
+    })
+
+
+@needs_simulator
+@pytest.mark.parametrize("alltoall_model", ["pairwise_steps", "nccl_pairwise", "full_mesh"])
+def test_an_empty_transfer_across_servers_synchronizes_every_pair(alltoall_model, tmp_path):
+    """Each cross-server pair still exchanges one message when no token moves.
+
+    Any payload of at most one byte per peer is priced as that message, so an
+    empty all-to-all costs the same as a one-byte one, through the network.
+    """
+
+    empty = predict_collective_time(
+        two_server_scenario(0, alltoall_model, tmp_path / "empty"), repo_root=REPO
+    )
+    one_byte = predict_collective_time(
+        two_server_scenario(1, alltoall_model, tmp_path / "one_byte"), repo_root=REPO
+    )
+
+    flows = empty["raw_runner_payload"]
+    assert flows["expected_flows"] > 0
+    assert flows["finished_flows"] == flows["expected_flows"]
+    assert empty["breakdown"]["network_ms"] > 0
+    assert empty["predicted_time_ms"] == pytest.approx(one_byte["predicted_time_ms"])

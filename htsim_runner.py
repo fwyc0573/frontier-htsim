@@ -581,7 +581,10 @@ def generate_tm_from_spec(
             if n <= 1:
                 continue
             # Legacy runner semantics: chunk_total = ceil(tensor_bytes / n)  (per-peer)
-            chunk_total = (tensor_bytes + n - 1) // n
+            # An empty all-to-all still synchronizes every pair, so it sends the
+            # same one byte per peer as any payload of at most n bytes. htsim reads
+            # a zero flow size as an unbounded flow.
+            chunk_total = max((tensor_bytes + n - 1) // n, 1)
             # Optional override: split each (src,dst) chunk_total into sub-chunks.
             chunk_bytes = int(getattr(spec, "alltoall_chunk_bytes", 0) or 0)
             if chunk_bytes <= 0:
