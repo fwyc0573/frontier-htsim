@@ -581,7 +581,10 @@ def generate_tm_from_spec(
             if n <= 1:
                 continue
             # Legacy runner semantics: chunk_total = ceil(tensor_bytes / n)  (per-peer)
-            chunk_total = (tensor_bytes + n - 1) // n
+            # An empty all-to-all still synchronizes every pair, so it sends the
+            # same one byte per peer as any payload of at most n bytes. htsim reads
+            # a zero flow size as an unbounded flow.
+            chunk_total = max((tensor_bytes + n - 1) // n, 1)
             # Optional override: split each (src,dst) chunk_total into sub-chunks.
             chunk_bytes = int(getattr(spec, "alltoall_chunk_bytes", 0) or 0)
             if chunk_bytes <= 0:
@@ -1466,7 +1469,12 @@ def _merge_spec_into_args(args: argparse.Namespace, spec: Dict[str, Any]) -> Non
     set_if_none_or_zero("cp", _spec_get(spec, "parallel.cp", _spec_get(spec, "cp", None)))
     set_if_none_or_zero("dp", _spec_get(spec, "parallel.dp", _spec_get(spec, "dp", None)))
     set_if_none_or_zero("ep", _spec_get(spec, "parallel.ep", _spec_get(spec, "ep", None)))
-    set_if_none_or_zero("tensor_bytes", _spec_get(spec, "collective.tensor_bytes", _spec_get(spec, "tensor_bytes", None)))
+    # An empty transfer is a real collective: it still pays the synchronization
+    # latency, so zero is a payload rather than a missing field. set_if_none_or_zero
+    # would read a spec zero as absent and would let a positive spec value
+    # overwrite an explicit command-line zero, so this field uses the helper that
+    # treats only None and "" as unset.
+    set_if_none_or_empty("tensor_bytes", _spec_get(spec, "collective.tensor_bytes", _spec_get(spec, "tensor_bytes", None)))
     set_if_none_or_zero("seed", _spec_get(spec, "seed", _spec_get(spec, "runner.seed", None)))
 
     set_if_none_or_empty("topology", _spec_get(spec, "topology.type", _spec_get(spec, "topology", "")))
@@ -2345,12 +2353,35 @@ def main(argv: list[str]) -> int:
     if getattr(args, "t2g_mode", None) is None:
         args.t2g_mode = "grouped"
 
+    # Required fields, with whether 0 is a legal value for each. For the rest a
+    # zero still means the field was never set, which is how spec merging and
+    # the argparse defaults represent an absent numeric field.
+    required_fields = (
+        ("collective_type", False),
+        ("domain_dims", False),
+        ("topology", False),
+        ("nodes", False),
+        ("gpus_per_server", False),
+        ("tp", False),
+        ("tensor_bytes", True),
+    )
     missing = []
-    for k in ("collective_type", "domain_dims", "topology", "nodes", "gpus_per_server", "tp", "tensor_bytes"):
-        if getattr(args, k) in (None, "", 0):
+    for k, zero_is_valid in required_fields:
+        value = getattr(args, k)
+        if value is None or value == "" or (not zero_is_valid and value == 0):
             missing.append(k)
     if missing:
         print(f"Error: missing required fields: {missing}. Provide via CLI or --spec.", file=sys.stderr)
+        return 2
+
+    if args.tensor_bytes < 0:
+        print("Error: tensor_bytes must be >= 0.", file=sys.stderr)
+        return 2
+    # Only an all-to-all defines an empty payload: every pair still exchanges one
+    # byte. The other kinds size their cross-server flows from the payload, and
+    # htsim never finishes a zero-size flow.
+    if args.tensor_bytes == 0 and args.collective_type != "alltoall":
+        print(f"Error: tensor_bytes=0 is defined only for alltoall, not {args.collective_type}.", file=sys.stderr)
         return 2
 
     if args.servers is None or args.servers <= 0:

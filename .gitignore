@@ -32,6 +32,10 @@ experiments_legacy/
 rl_net_exp/
 plots/
 idmap.txt
-tests/
+# Private working material under tests/ stays out of the public repository.
+# Published tests are listed explicitly. A bare `tests/` would stop git from
+# descending into the directory, which makes the negation below unreachable.
+tests/*
+!tests/test_zero_payload_input.py
 nccl/
 nccl_analysis/
