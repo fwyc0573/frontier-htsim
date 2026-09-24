@@ -2377,6 +2377,12 @@ def main(argv: list[str]) -> int:
     if args.tensor_bytes < 0:
         print("Error: tensor_bytes must be >= 0.", file=sys.stderr)
         return 2
+    # Only an all-to-all defines an empty payload: every pair still exchanges one
+    # byte. The other kinds size their cross-server flows from the payload, and
+    # htsim never finishes a zero-size flow.
+    if args.tensor_bytes == 0 and args.collective_type != "alltoall":
+        print(f"Error: tensor_bytes=0 is defined only for alltoall, not {args.collective_type}.", file=sys.stderr)
+        return 2
 
     if args.servers is None or args.servers <= 0:
         if args.nodes % args.gpus_per_server != 0:

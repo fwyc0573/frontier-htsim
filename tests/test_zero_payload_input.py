@@ -1,10 +1,11 @@
 """Zero, missing, negative and positive collective payloads at the real boundary.
 
-An empty transfer is a legitimate collective. An expert-parallel all-to-all whose
-local lane received no tokens in a step carries zero bytes and still pays the
-synchronization latency of the fabric. These tests run the real scenario
-serialization and the real runner, so a change that starts treating zero as a
-missing field fails here.
+An empty all-to-all is a legitimate collective. An expert-parallel all-to-all
+whose local lane received no tokens in a step carries zero bytes and still pays
+the synchronization latency of the fabric. It is the only kind with a defined
+empty payload; the runner rejects zero for every other kind. These tests run the
+real scenario serialization and the real runner, so a change that starts
+treating zero as a missing field fails here.
 
 The cases that need a prediction skip unless the CPU simulator has been built
 (`cd sim && make -j"$(nproc)"`). The input-handling cases run without it.
@@ -32,12 +33,12 @@ NVLINK_EFFICIENCY = 0.8
 GPUS = 8
 
 
-def scenario(payload, out_dir):
+def scenario(payload, out_dir, kind="alltoall"):
     return Scenario.from_dict({
         "cluster": {"servers": 1, "gpus_per_server": GPUS},
         "parallelism": {"tp": 1, "cp": 1, "dp": 1, "ep": GPUS},
         "collective": {
-            "kind": "alltoall",
+            "kind": kind,
             "tensor_bytes": payload,
             "domain_dims": ["EP"],
             "placement_order": ["TP", "CP", "DP", "EP"],
@@ -56,14 +57,14 @@ def scenario(payload, out_dir):
 
 
 def run_runner(tmp_path, *, spec_payload, cli_payload=None, drop_field=False,
-               raw_payload=None):
+               raw_payload=None, kind="alltoall"):
     """Serialize a scenario and run the real runner over it.
 
     `raw_payload` edits the serialized file after the schema has accepted it,
     which is the only way to hand the runner a value the schema rejects.
     """
 
-    spec = scenario(spec_payload, tmp_path).to_runner_spec()
+    spec = scenario(spec_payload, tmp_path, kind).to_runner_spec()
     if drop_field:
         del spec["collective"]["tensor_bytes"]
     elif raw_payload is not None:
@@ -102,6 +103,22 @@ def test_an_explicit_zero_is_not_a_missing_payload(tmp_path):
     result = run_runner(tmp_path, spec_payload=0)
     assert "missing required fields" not in result.stderr
     assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize("kind", ["allreduce", "allgather", "reducescatter", "p2p"])
+def test_only_an_all_to_all_accepts_an_empty_payload(kind, tmp_path):
+    """These kinds size their cross-server flows from the payload.
+
+    A zero payload gives zero-size flows there, which htsim never finishes, so a
+    cross-server all-reduce ran until it was killed. The runner refuses zero for
+    these kinds before building any flow, on one server as well as across
+    servers. The scenario here is one server, where each kind runs at a positive
+    payload.
+    """
+
+    result = run_runner(tmp_path, spec_payload=0, kind=kind)
+    assert result.returncode == 2
+    assert f"tensor_bytes=0 is defined only for alltoall, not {kind}" in result.stderr
 
 
 def test_the_runner_rejects_a_negative_payload(tmp_path):
